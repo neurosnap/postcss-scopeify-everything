@@ -1,5 +1,5 @@
 {
-  "name": "postcss-scopify-everything",
+  "name": "postcss-scopeify-everything",
   "version": "0.0.2",
   "description": "PostCSS plugin to scopify every CSS selector",
   "main": "index.js",
