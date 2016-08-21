@@ -1,3 +1,5 @@
+'use strict';
+
 /* eslint-disable max-len */
 const test = require('tape');
 const autoprefixer = require('autoprefixer');

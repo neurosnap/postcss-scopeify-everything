@@ -1,5 +1,5 @@
-PostCSS Scopeify Everything
-==========================
+PostCSS Scopeify Everything [![Build Status](https://travis-ci.org/neurosnap/postcss-scopeify-everything.svg?branch=master)](https://travis-ci.org/neurosnap/postcss-scopeify-everything)
+===========================
 
 This PostCSS plugin will scopeify every selector, not just classes.
 

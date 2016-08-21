@@ -1,3 +1,5 @@
+'use strict';
+
 const scopeify = require('./lib');
 const api = require('./lib/api');
 const getCss = require('./lib/get-css');
