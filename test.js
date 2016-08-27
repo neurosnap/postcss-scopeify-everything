@@ -359,3 +359,15 @@ test('should scopeify font-face at-rule', t => {
   t.deepEqual(result, expected);
   t.equal(getCss(result), expectedCss);
 });
+
+test('should *not* scopeify font-face', t => {
+  t.plan(2);
+  const css = '@font-face { font-family: "Open-Sans"; font-weight: bold; src: url(http://fonts.google.com) format("woff"); mso-font-alt: "Arial"; }';
+  const expected = defaultExpected;
+  const expectedCss = '@font-face { font-family: "Open-Sans"; font-weight: bold; src: url(http://fonts.google.com) format("woff"); mso-font-alt: "Arial"; }';
+  const opts = { scopeifyFn, fontFaces: false };
+
+  const result = pse.api(opts)(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
