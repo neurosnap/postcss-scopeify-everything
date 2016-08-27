@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "PostCSS plugin to scopify every CSS selector",
   "main": "index.js",
+  "repository": "git@github.com:neurosnap/postcss-scopeify-everything.git",
   "scripts": {
     "test": "tape test.js | tap-spec"
   },
@@ -11,7 +12,14 @@
     "scopify",
     "everything",
     "selector",
-    "css"
+    "css",
+    "class",
+    "element",
+    "id",
+    "keyframes",
+    "font-face",
+    "postcss",
+    "plugin"
   ],
   "author": "Eric Bower",
   "license": "MIT",
