@@ -7,6 +7,7 @@ This PostCSS plugin will scopeify every selector, not just classes.
 * Classes
 * Ids
 * Keyframes
+* Font Faces
 
 Use as a plugin
 ---------------
@@ -30,7 +31,8 @@ This will return an object with the following properties:
 * elements {object}: map containing all the HTML element scopeified and converted into classes
 * classes {object}: map containing all the class selectors scopeified
 * ids {object}: map containing all the id selectors scopeified
-* keyframes {object}: map containing all the keyframe animations that were scopeified
+* keyframes {object}: map containing all the \@keyframe animations that were scopeified
+* fontFaces {object}: map containing all the \@font-face definitions that were scopeified
 
 Async
 ```js
@@ -150,3 +152,4 @@ Options
 * elements (Boolean): determines whether or not to disable scoping `elements`
 * classes (Boolean): determines whether or not to disable scoping `classes`
 * keyframes (Boolean): determines whether or not to disable scoping `keyframes`
+* fontFaces (Boolean): determines whether or not to disable scoping `fontFaces`

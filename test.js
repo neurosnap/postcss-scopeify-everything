@@ -14,6 +14,7 @@ const defaultExpected = {
   ids: {},
   classes: {},
   keyframes: {},
+  fontFaces: {},
 };
 
 test('should change body element selector to a scoped class selector', (t) => {
@@ -342,6 +343,19 @@ test('should *not* scopeify class with weird syntax `[class=selector]`', t => {
   const opts = { scopeifyFn, classes: false };
 
   const result = pse.api(opts)(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should scopeify font-face at-rule', t => {
+  t.plan(2);
+  const css = '@font-face { font-family: "Open-Sans"; font-weight: bold; src: url(http://fonts.google.com) format("woff"); mso-font-alt: "Arial"; }';
+  const expected = Object.assign({}, defaultExpected, {
+    fontFaces: { 'Open-Sans': 'Open-Sans_1' },
+  });
+  const expectedCss = '@font-face { font-family: "Open-Sans_1"; font-weight: bold; src: url(http://fonts.google.com) format("woff"); mso-font-alt: "Arial"; }';
+
+  const result = scopeify(css).sync();
   t.deepEqual(result, expected);
   t.equal(getCss(result), expectedCss);
 });
