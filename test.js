@@ -3,7 +3,7 @@
 /* eslint-disable max-len */
 const test = require('tape');
 const autoprefixer = require('autoprefixer');
-const pse = require('../');
+const pse = require('./');
 
 const getCss = pse.getCss;
 const scopeifyFn = () => selector => `${selector}_1`;
@@ -298,6 +298,48 @@ test('should not scopeify anything', (t) => {
   });
   const expectedCss = '.cool { display: flex; } .div { font-size: 12px; }';
   const opts = { scopeifyFn: () => name => name };
+
+  const result = pse.api(opts)(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should scopeify element and class selector', t => {
+  t.plan(2);
+  const css = 'td.cell { width: 100% !important; }';
+  const expected = Object.assign({}, defaultExpected, {
+    classes: { cell: 'cell_1' },
+    elements: { td: 'td_1' },
+  });
+  const expectedCss = '.td_1.cell_1 { width: 100% !important; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should scopeify class with weird syntax `[class=selector]`', t => {
+  t.plan(2);
+  const css = 'td[class="cell"] { width: 100% !important; }';
+  const expected = Object.assign({}, defaultExpected, {
+    classes: { cell: 'cell_1' },
+    elements: { td: 'td_1' },
+  });
+  const expectedCss = '.td_1[class="cell_1"] { width: 100% !important; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should *not* scopeify class with weird syntax `[class=selector]`', t => {
+  t.plan(2);
+  const css = 'td[class="cell"] { width: 100% !important; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { td: 'td_1' },
+  });
+  const expectedCss = '.td_1[class="cell"] { width: 100% !important; }';
+  const opts = { scopeifyFn, classes: false };
 
   const result = pse.api(opts)(css).sync();
   t.deepEqual(result, expected);
