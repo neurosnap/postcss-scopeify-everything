@@ -21,9 +21,9 @@ test('should change body element selector to a scoped class selector', (t) => {
   t.plan(2);
   const css = 'body { background-color: "#fff"; }';
   const expected = Object.assign({}, defaultExpected, {
-    elements: { body: 'body_1' },
+    elements: { body: 'body_el_1' },
   });
-  const expectedCss = '.body_1 { background-color: "#fff"; }';
+  const expectedCss = '.body_el_1 { background-color: "#fff"; }';
 
   scopeify(css).promise()
     .then(result => {
@@ -37,9 +37,9 @@ test('should change div element selector to a scoped class selector', (t) => {
   t.plan(2);
   const css = 'div { display: flex; height: 50px; }';
   const expected = Object.assign({}, defaultExpected, {
-    elements: { div: 'div_1' },
+    elements: { div: 'div_el_1' },
   });
-  const expectedCss = '.div_1 { display: flex; height: 50px; }';
+  const expectedCss = '.div_el_1 { display: flex; height: 50px; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
@@ -103,10 +103,10 @@ test('should change div > .bro combo selectors to scoped combo selectors', (t) =
   t.plan(2);
   const css = 'div > .bro { display: flex; height: 50px; }';
   const expected = Object.assign({}, defaultExpected, {
-    elements: { div: 'div_1' },
+    elements: { div: 'div_el_1' },
     classes: { bro: 'bro_1' },
   });
-  const expectedCss = '.div_1 > .bro_1 { display: flex; height: 50px; }';
+  const expectedCss = '.div_el_1 > .bro_1 { display: flex; height: 50px; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
@@ -158,9 +158,9 @@ test('should scopeify an element with :hover', (t) => {
   t.plan(2);
   const css = 'a:hover { text-decoration: none; }';
   const expected = Object.assign({}, defaultExpected, {
-    elements: { a: 'a_1' },
+    elements: { a: 'a_el_1' },
   });
-  const expectedCss = '.a_1:hover { text-decoration: none; }';
+  const expectedCss = '.a_el_1:hover { text-decoration: none; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
@@ -295,9 +295,9 @@ test('should not scopeify anything', (t) => {
   const css = '.cool { display: flex; } div { font-size: 12px; }';
   const expected = Object.assign({}, defaultExpected, {
     classes: { cool: 'cool' },
-    elements: { div: 'div' },
+    elements: { div: 'div_el' },
   });
-  const expectedCss = '.cool { display: flex; } .div { font-size: 12px; }';
+  const expectedCss = '.cool { display: flex; } .div_el { font-size: 12px; }';
   const opts = { scopeifyFn: () => name => name };
 
   const result = pse.api(opts)(css).sync();
@@ -310,9 +310,9 @@ test('should scopeify element and class selector', t => {
   const css = 'td.cell { width: 100% !important; }';
   const expected = Object.assign({}, defaultExpected, {
     classes: { cell: 'cell_1' },
-    elements: { td: 'td_1' },
+    elements: { td: 'td_el_1' },
   });
-  const expectedCss = '.td_1.cell_1 { width: 100% !important; }';
+  const expectedCss = '.td_el_1.cell_1 { width: 100% !important; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
@@ -324,9 +324,37 @@ test('should scopeify class with weird syntax `[class=selector]`', t => {
   const css = 'td[class="cell"] { width: 100% !important; }';
   const expected = Object.assign({}, defaultExpected, {
     classes: { cell: 'cell_1' },
-    elements: { td: 'td_1' },
+    elements: { td: 'td_el_1' },
   });
-  const expectedCss = '.td_1[class="cell_1"] { width: 100% !important; }';
+  const expectedCss = '.td_el_1[class="cell_1"] { width: 100% !important; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should scopeify class with weird syntax `[class=selector]` with a class with hyphens', t => {
+  t.plan(2);
+  const css = 'td[class="cell-area"] { width: 100% !important; }';
+  const expected = Object.assign({}, defaultExpected, {
+    classes: { 'cell-area': 'cell-area_1' },
+    elements: { td: 'td_el_1' },
+  });
+  const expectedCss = '.td_el_1[class="cell-area_1"] { width: 100% !important; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should scopeify class with weird syntax `[class=selector]` with a class with multiple classes', t => {
+  t.plan(2);
+  const css = 'td[class="cell center"] { width: 100% !important; }';
+  const expected = Object.assign({}, defaultExpected, {
+    classes: { 'cell center': 'cell_center_1' },
+    elements: { td: 'td_el_1' },
+  });
+  const expectedCss = '.td_el_1[class="cell_center_1"] { width: 100% !important; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
@@ -337,12 +365,26 @@ test('should *not* scopeify class with weird syntax `[class=selector]`', t => {
   t.plan(2);
   const css = 'td[class="cell"] { width: 100% !important; }';
   const expected = Object.assign({}, defaultExpected, {
-    elements: { td: 'td_1' },
+    elements: { td: 'td_el_1' },
   });
-  const expectedCss = '.td_1[class="cell"] { width: 100% !important; }';
+  const expectedCss = '.td_el_1[class="cell"] { width: 100% !important; }';
   const opts = { scopeifyFn, classes: false };
 
   const result = pse.api(opts)(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should scopeify element and class with same selector name', t => {
+  t.plan(2);
+  const css = 'table[class="table"] { width: 100%; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { table: 'table_el_1' },
+    classes: { table: 'table_1' },
+  });
+  const expectedCss = '.table_el_1[class="table_1"] { width: 100%; }';
+
+  const result = scopeify(css).sync();
   t.deepEqual(result, expected);
   t.equal(getCss(result), expectedCss);
 });
