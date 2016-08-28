@@ -402,6 +402,20 @@ test('should scopeify font-face at-rule', t => {
   t.equal(getCss(result), expectedCss);
 });
 
+test('should scopeify attribute selector with substring matcher `*=`', t => {
+  t.plan(2);
+  const css = 'td[class*="cell-nav"] { width: 100%; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { td: 'td_el_1' },
+    classes: { 'cell-nav': 'cell-nav_1' },
+  });
+  const expectedCss = '.td_el_1[class*="cell-nav_1"] { width: 100%; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
 test('should *not* scopeify font-face', t => {
   t.plan(2);
   const css = '@font-face { font-family: "Open-Sans"; font-weight: bold; src: url(http://fonts.google.com) format("woff"); mso-font-alt: "Arial"; }';
