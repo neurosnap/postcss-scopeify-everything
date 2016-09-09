@@ -427,3 +427,58 @@ test('should *not* scopeify font-face', t => {
   t.deepEqual(result, expected);
   t.equal(getCss(result), expectedCss);
 });
+
+test('should properly scope both elements and classes with attribute selector', t => {
+  t.plan(2);
+  const css = 'span[class="zestimate-break"], span[class="nolinebreak"] { display: none; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { span: 'span_el_1' },
+    classes: { 'zestimate-break': 'zestimate-break_1', nolinebreak: 'nolinebreak_1' },
+  });
+  const expectedCss = '.span_el_1[class="zestimate-break_1"], .span_el_1[class="nolinebreak_1"] { display: none; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should properly scope both elements and classes with normal classes', t => {
+  t.plan(2);
+  const css = 'span.zestimate-break, span.nolinebreak { display: none; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { span: 'span_el_1' },
+    classes: { 'zestimate-break': 'zestimate-break_1', nolinebreak: 'nolinebreak_1' },
+  });
+  const expectedCss = '.span_el_1.zestimate-break_1, .span_el_1.nolinebreak_1 { display: none; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('the `*` selector should be converted to class `__asterisk_1`', t => {
+  t.plan(2);
+  const css = '* { display: none; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { '*': '__asterisk_1' },
+  });
+  const expectedCss = '.__asterisk_1 { display: none; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('the `*` selector class attribute selector', t => {
+  t.plan(2);
+  const css = '*[class~="foo"] { display: none; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { '*': '__asterisk_1' },
+    classes: { foo: 'foo_1' },
+  });
+  const expectedCss = '.__asterisk_1[class~="foo_1"] { display: none; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
