@@ -34,7 +34,8 @@ This will return an object with the following properties:
 * keyframes {object}: map containing all the \@keyframe animations that were scopeified
 * fontFaces {object}: map containing all the \@font-face definitions that were scopeified
 
-Async
+### Async
+
 ```js
 const pse = require('postcss-scopeify-everything');
 const scopeify = pse.api();
@@ -45,17 +46,18 @@ const css = 'div > .bro { display: flex; height: 50px; }';
 scopeify(css).promise()
   .then(result => {
     console.log(result);
-    /* { elements: { div: 'div_4wb1Hi' },
+    /* { elements: { div: 'div_el_4wb1Hi' },
       classes: { bro: 'bro_4wb1Hi' },
       ids: {},
       keyframes: {} }
     */
     console.log(getCss(result));
-    // .div_4wb1Hi > .bro_4wb1Hi { display: flex; height: 50px; }
+    // .div_el_4wb1Hi > .bro_4wb1Hi { display: flex; height: 50px; }
   });
 ```
 
-Sync
+### Sync
+
 ```js
 const pse = require('postcss-scopeify-everything');
 const scopeify = pse.api();
@@ -74,7 +76,7 @@ console.log(getCss(scopified));
 // #foo_4uC3yI, .bro_4uC3yI { display: flex; height: 50px; }
 ```
 
-Only scopeify classes
+### Only scopeify classes
 
 ```js
 const pse = require('postcss-scopeify-everything');
@@ -86,7 +88,7 @@ console.log(scopeified);
 console.log(getCss(scopeified));
 ```
 
-Modify scope hash
+### Modify scope hash
 
 ```js
 const pse = require('postcss-scopeify-everything');
@@ -104,7 +106,7 @@ function hashFn(css) {
 }
 ```
 
-Add PostCSS plugins
+### Add PostCSS plugins
 
 ```js
 const autoprefixer = require('autoprefixer');
@@ -124,7 +126,7 @@ console.log(getCss(scopeified));
 // .prefix_gQhnX { display: -webkit-box; display: -ms-flexbox; display: flex; }
 ```
 
-No scope
+### No scope
 
 ```js
 const pse = require('postcss-scopeify-everything');
@@ -134,13 +136,53 @@ const getCss = pse.getCss;
 const css = '.cool { display: flex; } div { font-size: 12px; }';
 const scopeified = scopeify(css).sync();
 console.log(scopeified);
-/* { elements: { div: 'div' },
+/* { elements: { div: 'div_el' },
   classes: { cool: 'cool' },
   ids: {},
   keyframes: {} }
 */
 console.log(getCss(scopeified));
-// .cool { display: flex; } .div { font-size: 12px; }
+// .cool { display: flex; } .div_el { font-size: 12px; }
+```
+
+### Convert an element into a class with a different postfix.
+
+By default, anytime an element is converted into a class, a special postfix is attached to avoid
+class name conflicts, we can override this behavior to set a custom postfix using the
+`scopeifyElFn` option.
+
+```js
+const pse = require('postcss-scopeify-everything');
+const scopeify = pse.api({ scopeifyElFn: name => name + '_special' });
+const getCss = pse.getCss;
+
+const css = 'div { display: flex; }';
+const scopeified = scopeify(css).sync();
+console.log(scopeified);
+/* { elements: { div: 'div_special_gQhnX' },
+  classes: {},
+  ids: {},
+  keyframes: {} }
+*/
+console.log(getCss(scopeified));
+// .div_special_gQhnX { display: flex; }
+```
+
+### Asterisk selector
+
+The asterisk selector will be converted into a class using a special name `__asterisk`.
+
+```js
+const css = '* { font-size: 12px; }';
+const scopeified = scopeify(css).sync();
+console.log(scopeified);
+/* { elements: { '*': '__asterisk_gQhnX' },
+  classes: {},
+  ids: {},
+  keyframes: {} }
+*/
+console.log(getCss(scopeified));
+// .__asterisk_gQhnX { font-size: 12px; }
 ```
 
 Options
@@ -148,6 +190,7 @@ Options
 
 * plugins (Array): adds PostCSS plugins before the scopeify plugin
 * scopeifyFn (Function): the function that hashes the identifier name
+* scopeifyElFn (Function): the function that converts an element name to a class name
 * ids (Boolean): determines whether or not to disable scoping `ids`
 * elements (Boolean): determines whether or not to disable scoping `elements`
 * classes (Boolean): determines whether or not to disable scoping `classes`
