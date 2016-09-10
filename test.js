@@ -319,55 +319,55 @@ test('should scopeify element and class selector', t => {
   t.equal(getCss(result), expectedCss);
 });
 
-test('should scopeify class with weird syntax `[class=selector]`', t => {
+test('should scopeify class with attribute selector `[class=selector]`', t => {
   t.plan(2);
   const css = 'td[class="cell"] { width: 100% !important; }';
   const expected = Object.assign({}, defaultExpected, {
     classes: { cell: 'cell_1' },
     elements: { td: 'td_el_1' },
   });
-  const expectedCss = '.td_el_1[class="cell_1"] { width: 100% !important; }';
+  const expectedCss = '.td_el_1[class~="cell_1"] { width: 100% !important; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
   t.equal(getCss(result), expectedCss);
 });
 
-test('should scopeify class with weird syntax `[class=selector]` with a class with hyphens', t => {
+test('should scopeify class with attribute selector `[class=selector]` with a class with hyphens', t => {
   t.plan(2);
   const css = 'td[class="cell-area"] { width: 100% !important; }';
   const expected = Object.assign({}, defaultExpected, {
     classes: { 'cell-area': 'cell-area_1' },
     elements: { td: 'td_el_1' },
   });
-  const expectedCss = '.td_el_1[class="cell-area_1"] { width: 100% !important; }';
+  const expectedCss = '.td_el_1[class~="cell-area_1"] { width: 100% !important; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
   t.equal(getCss(result), expectedCss);
 });
 
-test('should scopeify class with weird syntax `[class=selector]` with a class with multiple classes', t => {
+test('should scopeify class with attribute selector `[class=selector]` with a class with multiple classes', t => {
   t.plan(2);
   const css = 'td[class="cell center"] { width: 100% !important; }';
   const expected = Object.assign({}, defaultExpected, {
     classes: { 'cell center': 'cell_center_1' },
     elements: { td: 'td_el_1' },
   });
-  const expectedCss = '.td_el_1[class="cell_center_1"] { width: 100% !important; }';
+  const expectedCss = '.td_el_1[class~="cell_center_1"] { width: 100% !important; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
   t.equal(getCss(result), expectedCss);
 });
 
-test('should *not* scopeify class with weird syntax `[class=selector]`', t => {
+test('should *not* scopeify class with attribute selector `[class=selector]`', t => {
   t.plan(2);
   const css = 'td[class="cell"] { width: 100% !important; }';
   const expected = Object.assign({}, defaultExpected, {
     elements: { td: 'td_el_1' },
   });
-  const expectedCss = '.td_el_1[class="cell"] { width: 100% !important; }';
+  const expectedCss = '.td_el_1[class~="cell"] { width: 100% !important; }';
   const opts = { scopeifyFn, classes: false };
 
   const result = pse.api(opts)(css).sync();
@@ -382,7 +382,7 @@ test('should scopeify element and class with same selector name', t => {
     elements: { table: 'table_el_1' },
     classes: { table: 'table_1' },
   });
-  const expectedCss = '.table_el_1[class="table_1"] { width: 100%; }';
+  const expectedCss = '.table_el_1[class~="table_1"] { width: 100%; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
@@ -435,7 +435,7 @@ test('should properly scope both elements and classes with attribute selector', 
     elements: { span: 'span_el_1' },
     classes: { 'zestimate-break': 'zestimate-break_1', nolinebreak: 'nolinebreak_1' },
   });
-  const expectedCss = '.span_el_1[class="zestimate-break_1"], .span_el_1[class="nolinebreak_1"] { display: none; }';
+  const expectedCss = '.span_el_1[class~="zestimate-break_1"], .span_el_1[class~="nolinebreak_1"] { display: none; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
@@ -477,6 +477,90 @@ test('the `*` selector class attribute selector', t => {
     classes: { foo: 'foo_1' },
   });
   const expectedCss = '.__asterisk_1[class~="foo_1"] { display: none; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('element with class attribute selector without quotes', t => {
+  t.plan(2);
+  const css = 'div[class=show_me_always] { visibility: visible; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { div: 'div_el_1' },
+    classes: { show_me_always: 'show_me_always_1' },
+  });
+  const expectedCss = '.div_el_1[class~=show_me_always_1] { visibility: visible; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('the `*` selector class attribute selector without quotes', t => {
+  t.plan(2);
+  const css = '*[class=show_me_always] { visibility: visible; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { '*': '__asterisk_1' },
+    classes: { show_me_always: 'show_me_always_1' },
+  });
+  const expectedCss = '.__asterisk_1[class~=show_me_always_1] { visibility: visible; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('element selector with id attribute selector without quotes', t => {
+  t.plan(2);
+  const css = 'div[id=aapl] { display: flex; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { div: 'div_el_1' },
+    ids: { aapl: 'aapl_1' },
+  });
+  const expectedCss = '.div_el_1[id=aapl_1] { display: flex; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('element selector with id attribute selector with quotes', t => {
+  t.plan(2);
+  const css = 'div[id=\'aapl\'] { display: flex; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { div: 'div_el_1' },
+    ids: { aapl: 'aapl_1' },
+  });
+  const expectedCss = '.div_el_1[id=\'aapl_1\'] { display: flex; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('test combination of elements, attribute selectors, and wildcard selector', t => {
+  t.plan(2);
+  const css = 'table[id=aapl-eyebrow] a, *[class=aapl-container] a { color: inherit; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { a: 'a_el_1', table: 'table_el_1', '*': '__asterisk_1' },
+    ids: { 'aapl-eyebrow': 'aapl-eyebrow_1' },
+    classes: { 'aapl-container': 'aapl-container_1' },
+  });
+  const expectedCss = '.table_el_1[id=aapl-eyebrow_1] .a_el_1, .__asterisk_1[class~=aapl-container_1] .a_el_1 { color: inherit; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('element selector h1', t => {
+  t.plan(2);
+  const css = 'h1 { font-size: 16px; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { h1: 'h1_el_1' },
+  });
+  const expectedCss = '.h1_el_1 { font-size: 16px; }';
 
   const result = scopeify(css).sync();
   t.deepEqual(result, expected);
