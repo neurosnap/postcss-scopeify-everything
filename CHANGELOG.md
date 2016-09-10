@@ -1,6 +1,19 @@
 Changelog
 =========
 
+0.1.2
+-----
+
+* :rocket: Added id attribute selector support, e.g. `div[id="foobar"]`
+* :bug: We have to convert all class attribute selectors `[class="someClass"]` into `[class~="someClass"]`
+because we are almost always adding more classes to the element which breaks the `class=` rule.  Most
+of the time the CSS works with `class~=` which is the same as `.someClass {}` it's just that people
+are confused about the syntax.
+* :bug: h1, h2, h3, etc. were not getting recognized by the type selector algorithm
+* :bug: Passing nothing into the api would crash the library
+* :bug: Mixing both attribute selectors and normal element selectors would cause the library to
+ignore the element selectors
+
 0.1.1
 -----
 
