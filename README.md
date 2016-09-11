@@ -1,13 +1,13 @@
 PostCSS Scopeify Everything [![Build Status](https://travis-ci.org/neurosnap/postcss-scopeify-everything.svg?branch=master)](https://travis-ci.org/neurosnap/postcss-scopeify-everything)
 ===========================
 
-This PostCSS plugin will scopeify every selector, not just classes.
+This PostCSS plugin will scopeify the following CSS selectors:
 
 * Converts HTML elements into classes
 * Classes
 * Ids
 * Keyframes
-* Font Faces
+* Font-faces
 
 Use as a plugin
 ---------------
@@ -142,7 +142,8 @@ console.log(scopeified);
   keyframes: {} }
 */
 console.log(getCss(scopeified));
-// .cool { display: flex; } .div_el { font-size: 12px; }
+// .cool { display: flex; }
+// .div_el { font-size: 12px; }
 ```
 
 ### Convert an element into a class with a different postfix.
@@ -156,19 +157,20 @@ const pse = require('postcss-scopeify-everything');
 const scopeify = pse.api({ scopeifyElFn: name => name + '_special' });
 const getCss = pse.getCss;
 
-const css = 'div { display: flex; }';
+const css = 'table { width: 100%; } .table { border: 1px solid black; }';
 const scopeified = scopeify(css).sync();
 console.log(scopeified);
-/* { elements: { div: 'div_special_gQhnX' },
-  classes: {},
+/* { elements: { table: 'table_special_gQhnX' },
+  classes: { table: 'table_gQhnX' },
   ids: {},
   keyframes: {} }
 */
 console.log(getCss(scopeified));
-// .div_special_gQhnX { display: flex; }
+// .table_special_gQhnX { width: 100%; }
+// .table_gQhnX { border: 1px solid black; }
 ```
 
-### Asterisk selector
+### Wildcard selector
 
 The asterisk selector will be converted into a class using a special name `__asterisk`.
 
@@ -185,12 +187,32 @@ console.log(getCss(scopeified));
 // .__asterisk_gQhnX { font-size: 12px; }
 ```
 
+Use your own wildcard name
+
+```js
+const pse = require('postcss-scopeify-everything');
+const scopeify = pse.api({ asteriskName: '__wildcard__' });
+const getCss = pse.getCss;
+
+const css = '* { font-size: 12px; }';
+const scopeified = scopeify(css).sync();
+console.log(scopeified);
+/* { elements: { '*': '__wildcard__gQhnX' },
+  classes: {},
+  ids: {},
+  keyframes: {} }
+*/
+console.log(getCss(scopeified));
+// .__wildcard__gQhnX { font-size: 12px; }
+```
+
 Options
 -------
 
 * plugins (Array): adds PostCSS plugins before the scopeify plugin
 * scopeifyFn (Function): the function that hashes the identifier name
 * scopeifyElFn (Function): the function that converts an element name to a class name
+* asteriskName (Function|String): the string that is used for the wildcard selector `*`
 * ids (Boolean): determines whether or not to disable scoping `ids`
 * elements (Boolean): determines whether or not to disable scoping `elements`
 * classes (Boolean): determines whether or not to disable scoping `classes`

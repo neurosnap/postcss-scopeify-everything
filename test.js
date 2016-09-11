@@ -566,3 +566,17 @@ test('element selector h1', t => {
   t.deepEqual(result, expected);
   t.equal(getCss(result), expectedCss);
 });
+
+test('should use `__wildcard__` for the asterisk name instead of `__asterisk`', t => {
+  t.plan(2);
+  const css = '* { display: flex; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { '*': '__wildcard___1' },
+  });
+  const expectedCss = '.__wildcard___1 { display: flex; }';
+  const opts = { scopeifyFn, asteriskName: '__wildcard__' };
+
+  const result = pse.api(opts)(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
