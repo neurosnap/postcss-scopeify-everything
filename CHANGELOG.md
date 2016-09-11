@@ -5,6 +5,7 @@ Changelog
 -----
 
 * :rocket: Added id attribute selector support, e.g. `div[id="foobar"]`
+* :rocket: Added `asteriskName` to options which will allow ability to customize the wildcard scoped name
 * :bug: We have to convert all class attribute selectors `[class="someClass"]` into `[class~="someClass"]`
 because we are almost always adding more classes to the element which breaks the `class=` rule.  Most
 of the time the CSS works with `class~=` which is the same as `.someClass {}` it's just that people
