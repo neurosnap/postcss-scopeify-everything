@@ -25,7 +25,8 @@
   "license": "MIT",
   "dependencies": {},
   "peerDependencies": {
-    "postcss": "5.x"
+    "postcss": "5.x",
+    "postcss-safe-parser": "^2.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.4.0",
