@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.2.0 (01-07-2017)
+------------------
+
+* :sparkles: Added dependency [postcss-safe-parser](https://github.com/postcss/postcss-safe-parser)
+which creates a more fault tolerant CSS parser.  So now when postcss parsers a CSS syntax error,
+it will try to fix it before throwing an error.
+
 0.1.2
 -----
 

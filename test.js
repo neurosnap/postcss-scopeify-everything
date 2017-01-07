@@ -580,3 +580,82 @@ test('should use `__wildcard__` for the asterisk name instead of `__asterisk`', 
   t.deepEqual(result, expected);
   t.equal(getCss(result), expectedCss);
 });
+
+test('should fix missing bracket', t => {
+  t.plan(2);
+  const css = 'a {';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { a: 'a_el_1' },
+  });
+  const expectedCss = '.a_el_1 {}';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should ignore random `!important` outside of a css declaration', t => {
+  t.plan(2);
+  const css = 'a { color: blue; !important; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { a: 'a_el_1' },
+  });
+  const expectedCss = '.a_el_1 { color: blue; !important; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should ignore random `.` outside of a css declaration', t => {
+  t.plan(2);
+  const css = 'a { color: #3869D4;. }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { a: 'a_el_1' },
+  });
+  const expectedCss = '.a_el_1 { color: #3869D4;. }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should ignore HTML comments', t => {
+  t.plan(2);
+  const css = '/* I am an HTML comment */ a { color: blue; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { a: 'a_el_1' },
+  });
+  const expectedCss = '/* I am an HTML comment */ .a_el_1 { color: blue; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should close the missing bracket', t => {
+  t.plan(2);
+  const css = '@media only screen and (max-width: 480px) { .img-responsive { color: black; }';
+  const expected = Object.assign({}, defaultExpected, {
+    classes: { 'img-responsive': 'img-responsive_1' },
+  });
+  const expectedCss = '@media only screen and (max-width: 480px) { .img-responsive_1 { color: black; }}';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
+
+test('should ignore a selector without brackets', t => {
+  t.plan(2);
+  const css = '#yiv6126322310 a { color: red; }';
+  const expected = Object.assign({}, defaultExpected, {
+    elements: { a: 'a_el_1' },
+    ids: { yiv6126322310: 'yiv6126322310_1' },
+  });
+  const expectedCss = '#yiv6126322310_1 .a_el_1 { color: red; }';
+
+  const result = scopeify(css).sync();
+  t.deepEqual(result, expected);
+  t.equal(getCss(result), expectedCss);
+});
