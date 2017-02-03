@@ -1,4 +1,4 @@
-'use strict';
+ 'use strict';
 
 const scopeify = require('./lib');
 const api = require('./lib/api');
