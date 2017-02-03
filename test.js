@@ -3,7 +3,7 @@
 /* eslint-disable max-len */
 const test = require('tape');
 const autoprefixer = require('autoprefixer');
-const pse = require('./dist/index');
+const pse = require('./index');
 
 const getCss = pse.getCss;
 const scopeifyFn = () => selector => `${selector}_1`;
